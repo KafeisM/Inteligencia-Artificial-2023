@@ -7,7 +7,8 @@ ClauPercepcio:
 """
 from ia_2022 import entorn
 from practica1 import joc
-from practica1.entorn import Accio
+from practica1.entorn import Accio, SENSOR
+
 
 class Estat:
     def __init__(self, estat: list, pes: int, torn: bool, pare: None):
@@ -44,8 +45,16 @@ class Estat:
                     return True
         return False
 
+
     def genera_fills(self) -> list:
-        pass
+        fills = []
+        llista = self.__info
+        for fila in llista:
+            for valor in fila:
+                if valor == '0' and self.__torn:
+                    pos = fila.find()
+
+        return fills
 
 
     @staticmethod
@@ -59,15 +68,16 @@ class Agent(joc.Agent):
     def pinta(self, display):
         pass
 
-    def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
-        inici = [
-            "10000",
-            "01000",
-            "00100",
-            "00020",
-            "00000"
-        ]
+    def transformar(self, taulell: [[]]) -> list:
+        estat = []
+        for fila in taulell:
+            cadena = [str(numero.value) for numero in fila]
+            estat.append("".join(cadena))
+        return estat
 
-        prova = Estat(inici,0,None)
+    def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
+        taulell = percepcio[SENSOR.TAULELL]
+
+        prova = Estat(self.transformar(taulell), 0, True, None)
         print(prova.es_meta())
         return
