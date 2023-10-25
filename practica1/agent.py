@@ -46,4 +46,4 @@ class Agent(joc.Agent):
         print(jugador)
         prova = Estat(taulell, 0, jugador, None)
         print(prova)
-        return
+        return Accio.POSAR, (1,1)

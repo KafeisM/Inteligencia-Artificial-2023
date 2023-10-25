@@ -1,13 +1,14 @@
 from collections import deque
 
 from ia_2022 import entorn
-from quiques.agent import Barca, Estat
-from quiques.entorn import SENSOR, AccionsBarca
+from practica1 import joc
+from practica1.agent import Agent, Estat
+from practica1.entorn import Accio, SENSOR, TipusCasella
 
+class AgentAmplada(Agent):
 
-class BarcaAmplada(Barca):
-    def __init__(self):
-        super(BarcaAmplada, self).__init__()
+    def __init__(self, nom):
+        super(AgentAmplada, self).__init__(nom)
         self.__oberts = None
         self.__tancats = None
         self.__accions = None
@@ -18,16 +19,19 @@ class BarcaAmplada(Barca):
 
         if self.__accions is not None:
             for accio in self.__accions:
-                quiques,llops = accio #cada accio es una tupla indicat quants de animals moure
+                x,y = accio #cada accio es una tupla indicat quants de animals moure
                 print(accio)
                 self.__accions.remove(accio)
-                return AccionsBarca.MOURE,(quiques,llops)
+                return Accio.POSAR,(x,y)
 
-        return AccionsBarca.ATURAR
+        return Accio.ESPERAR
 
 
     def realitzar_cerca(self, percepcio):
-        estat_inicial = Estat(percepcio[SENSOR.LLOC], percepcio[SENSOR.LLOP_ESQ], percepcio[SENSOR.QUICA_ESQ])
+        taulell = percepcio[SENSOR.TAULELL]
+        jugador = self.jugador
+        estat_inicial = Estat(taulell, 0, jugador, None)
+
         cami, _ = self.cerca_general(estat_inicial)  # Realiza la búsqueda
 
         for meta in cami:
