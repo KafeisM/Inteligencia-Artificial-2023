@@ -11,26 +11,76 @@ from practica1.entorn import Accio, SENSOR, TipusCasella
 
 
 class Estat:
-    def __init__(self, taulell, pes: int, jugador: TipusCasella, pare: None):
+    def __init__(self, taulell, tamany, jugador: TipusCasella, pare: None):
         self.__info = taulell
-        self.__pes = pes
         self.__pare = pare
         self.__torn = jugador
+        self.__n = tamany
+
+    def __str__(self):
+        matriu_str = '\n'.join([' '.join([str(TipusCasella(value).name) for value in row]) for row in self.__info])
+        return f"{matriu_str} \nTorn del jugador: {self.__torn}"
+
+    def accio(self):
+        return self.__pare
 
     def __hash__(self):
         return hash(tuple(self.__info))
 
     def es_meta(self) -> bool:
-        pass
+        #veificar fies
+        for fila in self.__info:
+            if self._verificar_fila(fila):
+                return True
 
+        #verificar columnes
+        for col in range(self.__n):
+            columna = [fila[col] for fila in self.__info]
+            if self._verificar_fila(columna):
+                return True
 
-    def genera_fills(self) -> list:
+        #verificar diagonals
+        for i in range(self.__n -3):
+            for j in range(self.__n):
+                diagonal = [self.__info[i+k][i+k] for k in range(4)]
+                if self._verificar_fila(diagonal):
+                    return True
+
+                diagonal = [self.__info[i+k][j-k] for k in range(4) if j-k >=0]
+                if self._verificar_fila(diagonal):
+                    return True
+        return False
+
+    def _verificar_fila(self, linea):
+        for i in range(len(linea) -3):
+            if all(casella == self.__torn for casella in linea[i:i +4]):
+                return True
+        return False
+
+    def genera_fills(self, percepcio:entorn.Percepcio, numJugs: int) -> list:
         fills = []
+        matriu = self.__info
+        files,columnes = percepcio[SENSOR.MIDA]
 
+        for i in range(files):
+            for j in range(columnes):
+                if matriu[i][j] is TipusCasella.LLIURE and numJugs == 1:
+                    matriz_auxiliar = [fila[:] for fila in matriu]
+                    matriz_auxiliar[i][j] = TipusCasella.CARA
+                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (self, Accio.POSAR,(i,j))))
+
+                elif matriu[i][j] is TipusCasella.LLIURE and numJugs == 2:
+                    matriz_auxiliar = [fila[:] for fila in matriu]
+                    if self.__torn == TipusCasella.CARA:
+                        matriz_auxiliar[i][j] = TipusCasella.CARA
+                        seguent = TipusCasella.CREU
+                    else:
+                        matriz_auxiliar[i][j] = TipusCasella.CREU
+                        seguent = TipusCasella.CARA
+
+                    fills.append(Estat(matriz_auxiliar,files,seguent, (self, Accio.POSAR, (i, j))))
         return fills
 
-    def __str__(self):
-        return str(self.__info)
 
 class Agent(joc.Agent):
     def __init__(self, nom):
@@ -42,8 +92,10 @@ class Agent(joc.Agent):
     def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
         taulell = percepcio[SENSOR.TAULELL]
         jugador = self.jugador
-
+        mida = percepcio[SENSOR.MIDA]
+        
         print(jugador)
-        prova = Estat(taulell, 0, jugador, None)
-        print(prova)
-        return Accio.POSAR, (1,1)
+        prova = Estat(taulell, mida[0], jugador,None)
+        print(prova.es_meta())
+
+        return
