@@ -14,29 +14,33 @@ class AgentA(Agent):
     def pinta(self, display):
         print(self._posicio_pintar)
 
-    def cerca(self, estat_inicial):
+
+    def cerca(self, estat_inicial,percepcio):
         self.__oberts = PriorityQueue() #coa amb prioritat (sempre visible el proxim per agafar es a dir f(n) menor)
         self.__tancats = set()
 
-        self.__oberts.put((estat_inicial.calc_heuristica(), estat_inicial)) #tupla amb la heuristica i l'estat
+        self.__oberts.put((estat_inicial.calc_heuristica(percepcio), estat_inicial)) #tupla amb la heuristica i l'estat
 
         actual = None
         while not self.__oberts.empty():
-            _, actual = self.__oberts.get()
+            estimacio, actual = self.__oberts.get()
+            print(actual)
+            print(estimacio)
             if actual in self.__tancats:
                 continue
 
             if actual.es_meta():
                 break
 
-            fills = actual.genera_fills()
+            fills = actual.genera_fills(percepcio,1)
 
             for fill in fills:
-                self.__oberts.put((fill.calc_heuristica(), fill))
+                self.__oberts.put((fill.calc_heuristica(percepcio), fill))
 
             self.__tancats.add(actual)
 
         if actual.es_meta():
+            print("hi ha meta")
             accions = []
             iterador = actual
 
@@ -52,13 +56,17 @@ class AgentA(Agent):
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]
 
-        estat_inicial = Estat(taulell, mida[0], jugador, None)
+        estat_inicial = Estat(taulell, mida[0], jugador, 0,None)
 
         if self.__accions is None:
-            self.cerca(estat_inicial)
+            print("entra")
+            self.cerca(estat_inicial,percepcio)
+            print("surt")
 
         if self.__accions:
             accio = self.__accions.pop()
-            return Accio.POSAR, (accio[0],accio[1])
+            _, mov = accio  # la accio es una tuple amb Accio a realitzar, (x,y)
+            x, y = mov
+            return Accio.POSAR, (x,y)
         else:
             return Accio.ESPERAR

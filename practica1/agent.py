@@ -22,6 +22,17 @@ class Estat:
         matriu_str = '\n'.join([' '.join([str(TipusCasella(value).name) for value in row]) for row in self.__info])
         return f"{matriu_str} \nTorn del jugador: {self.__torn}"
 
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        return self.__info == other.__info
+
+    def __lt__(self, other):
+        """Overrides the less than comparison for A*"""
+        return self.__pes < other.__pes
+
+    def __hash__(self):
+        return hash(tuple(map(tuple, self.__info)))
+
     def accio(self):
         return self.__pare
 
@@ -65,7 +76,7 @@ class Estat:
                 if matriu[i][j] is TipusCasella.LLIURE and numJugs == 1:
                     matriz_auxiliar = [fila[:] for fila in matriu]
                     matriz_auxiliar[i][j] = TipusCasella.CARA
-                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (Accio.POSAR,(j,i))))
+                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA,self.__pes+1 ,(Accio.POSAR,(j,i))))
 
                 elif matriu[i][j] is TipusCasella.LLIURE and numJugs == 2:
                     matriz_auxiliar = [fila[:] for fila in matriu]
@@ -76,13 +87,13 @@ class Estat:
                         matriz_auxiliar[i][j] = TipusCasella.CREU
                         seguent = TipusCasella.CARA
 
-                    fills.append(Estat(matriz_auxiliar,files,seguent, (Accio.POSAR, (j, i))))
+                    fills.append(Estat(matriz_auxiliar,files,seguent,self.__pes+1 ,(Accio.POSAR, (j, i))))
         return fills
 
     def calc_heuristica(self, percepcio: entorn.Percepcio) -> int:
         n,m = percepcio[SENSOR.MIDA]
 
-        def contar_seguits(self, linea):
+        def contar_seguits(linea):
             maxim = 0
             cont = 0
 
@@ -92,7 +103,7 @@ class Estat:
                     maxim = max(maxim, cont)
                 else:
                     cont = 0
-            return max
+            return maxim
 
         files_rest = [4 - contar_seguits(self.__info[i]) for i in range(n)]
         columnes_rest = [4 - contar_seguits([self.__info[i][j] for i in range(n)]) for j in range(m)]
@@ -104,7 +115,6 @@ class Estat:
                 diagonal_rest.append(4 - contar_seguits(diagonal))
                 diagonal = [self.__info[i+k][j-k] for k in range(4) if j-k >=0]
                 diagonal_rest.append(4 - contar_seguits(diagonal))
-
         return (min(min(files_rest), min(columnes_rest), min(diagonal_rest))) + self.__pes
 
 class Agent(joc.Agent):
