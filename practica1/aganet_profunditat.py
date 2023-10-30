@@ -9,7 +9,7 @@ class Agent_Profunditat(Agent):
         super(Agent_Profunditat,self).__init__(nom)
         self.__oberts = None
         self.__tancats = None
-        self.__accions = []
+        self.__accions = None
 
     def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
         if self.__accions is None:
@@ -22,8 +22,9 @@ class Agent_Profunditat(Agent):
                 print(accio)
                 self.__accions.remove(accio)
                 return Accio.POSAR, (x, y)
-        return
+        return Accio.ESPERAR
     def realitzar_cerca(self, percepcio):
+        self.__accions = []
         taulell = percepcio[SENSOR.TAULELL]
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]

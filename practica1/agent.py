@@ -64,7 +64,7 @@ class Estat:
                 if matriu[i][j] is TipusCasella.LLIURE and numJugs == 1:
                     matriz_auxiliar = [fila[:] for fila in matriu]
                     matriz_auxiliar[i][j] = TipusCasella.CARA
-                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (Accio.POSAR,(i+1,j+1))))
+                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (Accio.POSAR,(j,i))))
 
                 elif matriu[i][j] is TipusCasella.LLIURE and numJugs == 2:
                     matriz_auxiliar = [fila[:] for fila in matriu]
@@ -75,7 +75,7 @@ class Estat:
                         matriz_auxiliar[i][j] = TipusCasella.CREU
                         seguent = TipusCasella.CARA
 
-                    fills.append(Estat(matriz_auxiliar,files,seguent, (Accio.POSAR, (i+1, j+1))))
+                    fills.append(Estat(matriz_auxiliar,files,seguent, (Accio.POSAR, (j, i))))
         return fills
 
 
