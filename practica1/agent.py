@@ -24,9 +24,6 @@ class Estat:
     def accio(self):
         return self.__pare
 
-    def __hash__(self):
-        return hash(tuple(self.__info))
-
     def es_meta(self) -> bool:
         #veificar fies
         for fila in self.__info:
@@ -67,7 +64,7 @@ class Estat:
                 if matriu[i][j] is TipusCasella.LLIURE and numJugs == 1:
                     matriz_auxiliar = [fila[:] for fila in matriu]
                     matriz_auxiliar[i][j] = TipusCasella.CARA
-                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (self, Accio.POSAR,(i,j))))
+                    fills.append(Estat(matriz_auxiliar,files,TipusCasella.CARA, (Accio.POSAR,(i+1,j+1))))
 
                 elif matriu[i][j] is TipusCasella.LLIURE and numJugs == 2:
                     matriz_auxiliar = [fila[:] for fila in matriu]
@@ -78,7 +75,7 @@ class Estat:
                         matriz_auxiliar[i][j] = TipusCasella.CREU
                         seguent = TipusCasella.CARA
 
-                    fills.append(Estat(matriz_auxiliar,files,seguent, (self, Accio.POSAR, (i, j))))
+                    fills.append(Estat(matriz_auxiliar,files,seguent, (Accio.POSAR, (i+1, j+1))))
         return fills
 
 
@@ -93,8 +90,7 @@ class Agent(joc.Agent):
         taulell = percepcio[SENSOR.TAULELL]
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]
-        
-        print(jugador)
+
         prova = Estat(taulell, mida[0], jugador,None)
         print(prova.es_meta())
 

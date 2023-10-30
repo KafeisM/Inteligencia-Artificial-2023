@@ -5,7 +5,7 @@ S'ha d'implementar el mètode:
 """
 from ia_2022 import entorn
 from quiques.agent import Barca, Estat
-from quiques.entorn import AccionsBarca
+from quiques.entorn import AccionsBarca, SENSOR
 
 
 class BarcaProfunditat(Barca):
@@ -15,18 +15,18 @@ class BarcaProfunditat(Barca):
         self.__tancats = None
         self.__accions = None
 
-        def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
-            if self.__accions is None:
-                self.realitzar_cerca(percepcio)
+    def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
+        if self.__accions is None:
+            self.realitzar_cerca(percepcio)
 
-            if self.__accions is not None:
-                for accio in self.__accions:
-                    quiques, llops = accio  # cada accio es una tupla indicat quants de animals moure
-                    print(accio)
-                    self.__accions.remove(accio)
-                    return AccionsBarca.MOURE, (quiques, llops)
+        if self.__accions is not None:
+            for accio in self.__accions:
+                quiques, llops = accio  # cada accio es una tupla indicat quants de animals moure
+                print(accio)
+                self.__accions.remove(accio)
+                return AccionsBarca.MOURE, (quiques, llops)
 
-            return AccionsBarca.ATURAR
+        return AccionsBarca.ATURAR
 
     def realitzar_cerca(self, percepcio):
         estat_inicial = Estat(percepcio[SENSOR.LLOC], percepcio[SENSOR.LLOP_ESQ], percepcio[SENSOR.QUICA_ESQ])
