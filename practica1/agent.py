@@ -11,10 +11,11 @@ from practica1.entorn import Accio, SENSOR, TipusCasella
 
 
 class Estat:
-    def __init__(self, taulell, tamany, jugador: TipusCasella, pare: None):
+    def __init__(self, taulell, tamany, jugador: TipusCasella, pes: int, pare: None):
         self.__info = taulell
         self.__pare = pare
         self.__torn = jugador
+        self.__pes = pes
         self.__n = tamany
 
     def __str__(self):
@@ -81,39 +82,30 @@ class Estat:
     def calc_heuristica(self, percepcio: entorn.Percepcio) -> int:
         n,m = percepcio[SENSOR.MIDA]
 
-        def contar_recte(self, linea):
-            return linea.count(self.__torn.value)
+        def contar_seguits(self, linea):
+            maxim = 0
+            cont = 0
 
-        def contar_diagonal(self, linea):
-            count = 0
-            for i in range(min(n, m)):
-                if linea[i] == self.__torn.value:
-                    count += 1
-            return count
+            for valor in linea:
+                if valor == self.__torn.value:
+                    cont += 1
+                    maxim = max(maxim, cont)
+                else:
+                    cont = 0
+            return max
 
-        files_rest = [4 - contar_recte(self.__info[i]) for i in range(n)]
-        columnes_rest = [4 - contar_recte([self.__info[i][j] for i in range(n)]) for j in range(m)]
+        files_rest = [4 - contar_seguits(self.__info[i]) for i in range(n)]
+        columnes_rest = [4 - contar_seguits([self.__info[i][j] for i in range(n)]) for j in range(m)]
+        diagonal_rest = []
 
-        diagonal_prin = [self.__info[i][i] for i in range(min(n,m))]
-        diagonal_prin_rest = 4 - contar_diagonal(diagonal_prin)
+        for i in range(self.__n -3):
+            for j in range(self.__n):
+                diagonal = [self.__info[i+k][i+k] for k in range(4)]
+                diagonal_rest.append(4 - contar_seguits(diagonal))
+                diagonal = [self.__info[i+k][j-k] for k in range(4) if j-k >=0]
+                diagonal_rest.append(4 - contar_seguits(diagonal))
 
-        diagonal_sec = [self.__info[i][m-i-1] for i in range(min(n,m))]
-        diagonal_sec_rest = 4 - contar_diagonal(diagonal_sec)
-
-        diagonals_ad = []
-        for i in range(n):
-            for j in range(m):
-                if i+3 < n and j+3 < m:
-                    diagonal = [self.__info[i+k][j+k] for k in range(4)]
-                    diagonal_res = 4 - contar_diagonal(diagonal)
-                    diagonals_ad.append(diagonal_res)
-                if i+3 < n and j-3 >= 0:
-                    diagonal = [self.__info[i+k][j-k] for k in range(4)]
-                    diagonal_res = 4 - contar_diagonal(diagonal)
-                    diagonals_ad.append(diagonal_res)
-
-        res = min(min(files_rest), min(columnes_rest), diagonal_prin_rest, diagonal_sec_rest, min(diagonals_ad))
-        return res
+        return (min(min(files_rest), min(columnes_rest), min(diagonal_rest))) + self.__pes
 
 class Agent(joc.Agent):
     def __init__(self, nom):
