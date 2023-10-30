@@ -113,7 +113,7 @@ class Estat:
                     diagonals_ad.append(diagonal_res)
 
         res = min(min(files_rest), min(columnes_rest), diagonal_prin_rest, diagonal_sec_rest, min(diagonals_ad))
-        return res;
+        return res
 
 class Agent(joc.Agent):
     def __init__(self, nom):
