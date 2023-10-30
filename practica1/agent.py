@@ -78,6 +78,42 @@ class Estat:
                     fills.append(Estat(matriz_auxiliar,files,seguent, (Accio.POSAR, (j, i))))
         return fills
 
+    def calc_heuristica(self, percepcio: entorn.Percepcio) -> int:
+        n,m = percepcio[SENSOR.MIDA]
+
+        def contar_recte(self, linea):
+            return linea.count(self.__torn.value)
+
+        def contar_diagonal(self, linea):
+            count = 0
+            for i in range(min(n, m)):
+                if linea[i] == self.__torn.value:
+                    count += 1
+            return count
+
+        files_rest = [4 - contar_recte(self.__info[i]) for i in range(n)]
+        columnes_rest = [4 - contar_recte([self.__info[i][j] for i in range(n)]) for j in range(m)]
+
+        diagonal_prin = [self.__info[i][i] for i in range(min(n,m))]
+        diagonal_prin_rest = 4 - contar_diagonal(diagonal_prin)
+
+        diagonal_sec = [self.__info[i][m-i-1] for i in range(min(n,m))]
+        diagonal_sec_rest = 4 - contar_diagonal(diagonal_sec)
+
+        diagonals_ad = []
+        for i in range(n):
+            for j in range(m):
+                if i+3 < n and j+3 < m:
+                    diagonal = [self.__info[i+k][j+k] for k in range(4)]
+                    diagonal_res = 4 - contar_diagonal(diagonal)
+                    diagonals_ad.append(diagonal_res)
+                if i+3 < n and j-3 >= 0:
+                    diagonal = [self.__info[i+k][j-k] for k in range(4)]
+                    diagonal_res = 4 - contar_diagonal(diagonal)
+                    diagonals_ad.append(diagonal_res)
+
+        res = min(min(files_rest), min(columnes_rest), diagonal_prin_rest, diagonal_sec_rest, min(diagonals_ad))
+        return res;
 
 class Agent(joc.Agent):
     def __init__(self, nom):
