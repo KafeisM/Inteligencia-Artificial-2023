@@ -17,17 +17,14 @@ class Agent_MinMax(Agent):
 
         estat_inicial = Estat(taulell, mida[0], jugador, 0, None)
 
-        actual,_ = self.minmax(estat_inicial,percepcio)
+        actual, _ = self.minmax(estat_inicial,percepcio)
 
-        if self.__accions:
-            accio = self.__accions.pop()
-            _, mov = accio  # la accio es una tuple amb Accio a realitzar, (x,y)
-            x, y = mov
-            return Accio.POSAR, (x,y)
-        else:
+        mov = actual.pare
+        if actual.es_meta() or mov is None:
             return Accio.ESPERAR
-
-
+        else:
+            accio, pos = mov
+            return accio, (pos[0], pos[1])
 
     def minmax(self, estat, percepcio):
         score = self.evaluar(estat)
@@ -35,9 +32,10 @@ class Agent_MinMax(Agent):
         if score is not None:
             return estat, score
 
-        puntuacio_fills = [self.minmax(estat_fill) for estat_fill in estat.genera_fills(percepcio,2)]
+        puntuacio_fills = [self.minmax(estat_fill,percepcio) for estat_fill in estat.genera_fills(percepcio, 2)]
 
         if estat.jugador() == TipusCasella.CARA:
+            print(puntuacio_fills)
             return max(puntuacio_fills)
         else:
             return min(puntuacio_fills)
