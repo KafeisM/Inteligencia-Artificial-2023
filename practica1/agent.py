@@ -99,8 +99,8 @@ class Estat:
                     fills.append(Estat(matriz_auxiliar,files,seguent,self.__pes+1 ,(Accio.POSAR, (j, i))))
         return fills
 
-    def calc_heuristica(self, percepcio: entorn.Percepcio) -> int:
-        n,m = percepcio[SENSOR.MIDA]
+    def calc_heuristica(self) -> int:
+        n = self.__n
 
         def contar_seguits(linea):
             maxim = 0
@@ -115,7 +115,7 @@ class Estat:
             return maxim
 
         files_rest = [4 - contar_seguits(self.__info[i]) for i in range(n)]
-        columnes_rest = [4 - contar_seguits([self.__info[i][j] for i in range(n)]) for j in range(m)]
+        columnes_rest = [4 - contar_seguits([self.__info[i][j] for i in range(n)]) for j in range(n)]
         diagonal_rest = []
 
         for i in range(self.__n -3):

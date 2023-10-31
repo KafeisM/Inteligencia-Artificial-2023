@@ -19,7 +19,7 @@ class AgentA(Agent):
         self.__oberts = PriorityQueue() #coa amb prioritat (sempre visible el proxim per agafar es a dir f(n) menor)
         self.__tancats = set()
 
-        self.__oberts.put((estat_inicial.calc_heuristica(percepcio), estat_inicial)) #tupla amb la heuristica i l'estat
+        self.__oberts.put((estat_inicial.calc_heuristica(), estat_inicial)) #tupla amb la heuristica i l'estat
 
         actual = None
         while not self.__oberts.empty():
