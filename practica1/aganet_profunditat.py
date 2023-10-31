@@ -29,7 +29,7 @@ class Agent_Profunditat(Agent):
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]
 
-        estat_inicial = Estat(taulell, mida[0], jugador, None)
+        estat_inicial = Estat(taulell, mida[0], jugador, 0,None)
         cami, _ = self.cerca_general(estat_inicial,percepcio)  # Realiza la cerca i retorna una array amb els estats
 
         for meta in cami:
@@ -41,7 +41,7 @@ class Agent_Profunditat(Agent):
 
         while self.__oberts:
             estat_actual, cami_actual = self.__oberts.pop()
-
+            print(estat_actual)
             if estat_actual.es_meta():
                 # si l'estat es meta, retornam el cami i que hi ha final
                 return cami_actual, True
@@ -49,7 +49,7 @@ class Agent_Profunditat(Agent):
             succesors = estat_actual.genera_fills(percepcio, 1) #generam fills per nomes 1 jugador
             self.__tancats.add(estat_actual)
 
-            for sucesor in succesors:
+            for sucesor in reversed(succesors):
                 if sucesor not in self.__tancats and sucesor not in (estat for estat, _ in self.__oberts):
                     # Agregamos el sucesor y su camino a la pila
                     nuevo_camino = cami_actual + [sucesor]

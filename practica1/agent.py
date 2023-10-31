@@ -36,6 +36,15 @@ class Estat:
     def accio(self):
         return self.__pare
 
+    def jugador(self):
+        return self.__torn
+
+    def info(self):
+        return self.__info
+
+    def tamany(self):
+        return self.__n
+
     def es_meta(self) -> bool:
         #veificar fies
         for fila in self.__info:

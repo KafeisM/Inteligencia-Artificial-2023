@@ -32,7 +32,7 @@ class AgentA(Agent):
             if actual.es_meta():
                 break
 
-            fills = actual.genera_fills(percepcio,1)
+            fills = actual.genera_fills(percepcio, 1)
 
             for fill in fills:
                 self.__oberts.put((fill.calc_heuristica(percepcio), fill))
@@ -56,7 +56,7 @@ class AgentA(Agent):
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]
 
-        estat_inicial = Estat(taulell, mida[0], jugador, 0,None)
+        estat_inicial = Estat(taulell, mida[0], jugador, 0 ,None)
 
         if self.__accions is None:
             print("entra")
