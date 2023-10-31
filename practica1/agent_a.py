@@ -35,7 +35,7 @@ class AgentA(Agent):
             fills = actual.genera_fills(percepcio, 1)
 
             for fill in fills:
-                self.__oberts.put((fill.calc_heuristica(percepcio), fill))
+                self.__oberts.put((fill.calc_heuristica(), fill))
 
             self.__tancats.add(actual)
 
