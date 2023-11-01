@@ -28,14 +28,14 @@ class Agent_MinMax(Agent):
 
     def minmax(self, estat, percepcio):
         score = self.evaluar(estat)
-
+        print(estat)
+        print(score)
         if score is not None:
             return estat, score
 
         puntuacio_fills = [self.minmax(estat_fill,percepcio) for estat_fill in estat.genera_fills(percepcio, 2)]
 
         if estat.jugador() == TipusCasella.CARA:
-            print(puntuacio_fills)
             return max(puntuacio_fills)
         else:
             return min(puntuacio_fills)
