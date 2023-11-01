@@ -5,19 +5,27 @@ from practica1.entorn import Accio, SENSOR, TipusCasella
 
 class Agent_MinMax(Agent):
 
+    accions = None
+
     def __init__(self,nom):
         super(Agent_MinMax, self).__init__(nom)
-        self.__tancats = None
+        self.__tancats = set()
 
 
     def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
         taulell = percepcio[SENSOR.TAULELL]
         jugador = self.jugador
         mida = percepcio[SENSOR.MIDA]
+        estat = Estat(taulell, mida[0], jugador, 0, None)
 
-        estat_inicial = Estat(taulell, mida[0], jugador, 0, None)
+        if Agent_MinMax.accions is None:
+            estat_aux = self.minmax(estat, 0)
 
-        actual, _ = self.minmax(estat_inicial,percepcio)
+            while not estat_aux.es_meta():
+                self.__set_accions(estat_aux)
+                estat = Estat(taulell, estat_aux)
+        # ddd
+        actual, _ = self.minmax(estat,percepcio)
 
         mov = actual.pare
         if actual.es_meta() or mov is None:
@@ -26,7 +34,63 @@ class Agent_MinMax(Agent):
             accio, pos = mov
             return accio, (pos[0], pos[1])
 
-    def minmax(self, estat, percepcio):
+    def __set_accions(self, estat: Estat):
+
+        accions = list()
+        iterador = estat
+
+        while iterador.pare is not None:
+            pare, accio = iterador.pare
+            accions.insert(0,accio)
+            iterador = pare
+
+        if Agent_MinMax.accions is None:
+            Agent_MinMax.accions = accions
+        else:
+            Agent_MinMax.accions += accions
+
+    def minmax(self, estat, profunditat, percepcio) -> Estat:
+        if estat.es_meta():
+
+            if estat.jugador() == TipusCasella.CARA:
+                estat.beta = 1000
+            else:
+                estat.alpha = -1000
+            return estat
+
+        elif profunditat == 3:
+
+            if estat.jugador() == TipusCasella.CARA:
+                estat.beta = estat.utilitat
+            else:
+                estat.alpha = estat.utilitat
+            return estat
+
+        fills = estat.genera_fills()
+        millor_estat = None
+
+        for fill in fills:
+            if fill in self.__tancats:
+                continue
+            fill.alpha = estat.alpha
+            fill.beta = estat.beta
+
+            estat_aux = self.minmax(fill, profunditat+1)
+
+            if estat_aux is None:
+                continue
+
+            if estat.jugador == TipusCasella.CREU:
+                if estat.alpha < fill.beta and fill.beta != float('inf'):
+                    estat.alpha = fill.beta
+                    millor_estat = estat_aux
+                if estat.alpha >= estat.beta:
+                    millor_estat = None
+                    break
+            #else
+
+
+        #ddd
         score = self.evaluar(estat)
         print(estat)
         print(score)

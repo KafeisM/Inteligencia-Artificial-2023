@@ -17,6 +17,9 @@ class Estat:
         self.__torn = jugador
         self.__pes = pes
         self.__n = tamany
+        self.__alpha = None
+        self.__beta = None
+        self.__utilitat = None
 
     def __str__(self):
         matriu_str = '\n'.join([' '.join([str(TipusCasella(value).name) for value in row]) for row in self.__info])
