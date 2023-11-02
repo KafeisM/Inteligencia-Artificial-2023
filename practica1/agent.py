@@ -111,24 +111,6 @@ class Estat:
                 return True
         return False
 
-    def papigenera_fills(self, percepcio: entorn.Percepcio, numJugs: int) -> list:
-        fills = []
-        matriu = self.__info
-        files, columnes = percepcio[SENSOR.MIDA]
-
-        for i in range(files):
-            for j in range(columnes):
-                if matriu[i][j] is TipusCasella.LLIURE:
-                    matriz_auxiliar = [fila[:] for fila in matriu]
-                    if numJugs == 1:
-                        seguent = TipusCasella.CARA
-                    elif numJugs == 2:
-                        seguent = TipusCasella.CARA if self.__torn == TipusCasella.CREU else TipusCasella.CREU
-
-                    matriz_auxiliar[i][j] = seguent
-                    fills.append(Estat(matriz_auxiliar, files, seguent, self.__pes + 1, (self, (Accio.POSAR, (j, i)))))
-
-        return fills
 
     def genera_fills(self, percepcio:entorn.Percepcio, numJugs: int) -> list:
         fills = []
@@ -204,6 +186,7 @@ class Estat:
             best_lineal = count
 
         return best_lineal
+
     def calc_heuristica(self) -> int:
 
         res = 0
@@ -231,11 +214,4 @@ class Agent(joc.Agent):
         pass
 
     def actua(self, percepcio: entorn.Percepcio) -> entorn.Accio | tuple[entorn.Accio, object]:
-        taulell = percepcio[SENSOR.TAULELL]
-        jugador = self.jugador
-        mida = percepcio[SENSOR.MIDA]
-
-        prova = Estat(taulell, mida[0], jugador,None)
-        print(prova.es_meta())
-
-        return
+        pass
