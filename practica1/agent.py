@@ -17,9 +17,9 @@ class Estat:
         self.__torn = jugador
         self.__pes = pes
         self.__n = tamany
-        self.__alpha = None
-        self.__beta = None
-        self.__utilitat = None
+        self.__alpha = float('-inf')
+        self.__beta = float('inf')
+        self.__utilitat = 0
 
     def __str__(self):
         matriu_str = '\n'.join([' '.join([str(TipusCasella(value).name) for value in row]) for row in self.__info])
@@ -43,6 +43,35 @@ class Estat:
     def pare(self):
         return self.__pare
 
+    @property
+    def alpha(self):
+        return self.__alpha
+
+    @property
+    def beta(self):
+        return self.__beta
+
+    @property
+    def utilitat(self):
+        return self.__utilitat
+
+    @property
+    def pes(self):
+        return self.__pes
+
+    @alpha.setter
+    def alpha(self, alpha):
+        self.__alpha = alpha
+
+    @beta.setter
+    def beta(self, beta):
+        self.__beta = beta
+
+    @utilitat.setter
+    def utilitat(self, utilitat):
+        self.__utilitat = utilitat
+
+    @property
     def jugador(self):
         return self.__torn
 
@@ -81,6 +110,25 @@ class Estat:
             if all(casella == self.__torn for casella in linea[i:i +4]):
                 return True
         return False
+
+    def papigenera_fills(self, percepcio: entorn.Percepcio, numJugs: int) -> list:
+        fills = []
+        matriu = self.__info
+        files, columnes = percepcio[SENSOR.MIDA]
+
+        for i in range(files):
+            for j in range(columnes):
+                if matriu[i][j] is TipusCasella.LLIURE:
+                    matriz_auxiliar = [fila[:] for fila in matriu]
+                    if numJugs == 1:
+                        seguent = TipusCasella.CARA
+                    elif numJugs == 2:
+                        seguent = TipusCasella.CARA if self.__torn == TipusCasella.CREU else TipusCasella.CREU
+
+                    matriz_auxiliar[i][j] = seguent
+                    fills.append(Estat(matriz_auxiliar, files, seguent, self.__pes + 1, (self, (Accio.POSAR, (j, i)))))
+
+        return fills
 
     def genera_fills(self, percepcio:entorn.Percepcio, numJugs: int) -> list:
         fills = []
@@ -160,7 +208,7 @@ class Estat:
 
         res = 0
         maxim = 0
-
+        self.__utilitat = 0
         if self.__pare is not None:
             for i in range(self.__n):
                 for j in range(self.__n):

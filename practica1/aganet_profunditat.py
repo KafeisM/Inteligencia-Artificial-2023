@@ -17,10 +17,14 @@ class Agent_Profunditat(Agent):
 
         if self.__accions is not None:
             for accio in self.__accions:
-                _, mov = accio #la accio es una tuple amb Accio a realitzar, (x,y)
-                x, y = mov
+
+                _, acc = accio #la accio es una tuple amb Accio a realitzar, (x,y)
+                _,mov = acc
+                x,y = mov
+                
                 self.__accions.remove(accio)
                 return Accio.POSAR, (x, y)
+
         return Accio.ESPERAR
 
     def realitzar_cerca(self, percepcio):

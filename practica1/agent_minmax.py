@@ -18,21 +18,13 @@ class Agent_MinMax(Agent):
         mida = percepcio[SENSOR.MIDA]
         estat = Estat(taulell, mida[0], jugador, 0, None)
 
-        if Agent_MinMax.accions is None:
-            estat_aux = self.minmax(estat, 0)
-
+        if self.accions is None:
+            estat_aux = self.minmax(estat,3, percepcio)
             while not estat_aux.es_meta():
-                self.__set_accions(estat_aux)
-                estat = Estat(taulell, estat_aux)
-        # ddd
-        actual, _ = self.minmax(estat,percepcio)
+                estat = Estat(percepcio[SENSOR.TAULELL],mida[0],self.jugador,0,None)
+                estat_aux = self.minmax(estat,0,percepcio)
+                print(estat_aux)
 
-        mov = actual.pare
-        if actual.es_meta() or mov is None:
-            return Accio.ESPERAR
-        else:
-            accio, pos = mov
-            return accio, (pos[0], pos[1])
 
     def __set_accions(self, estat: Estat):
 
@@ -50,9 +42,12 @@ class Agent_MinMax(Agent):
             Agent_MinMax.accions += accions
 
     def minmax(self, estat, profunditat, percepcio) -> Estat:
+
+        es_millor = False
+
         if estat.es_meta():
 
-            if estat.jugador() == TipusCasella.CARA:
+            if estat.jugador() == TipusCasella.CREU:
                 estat.beta = 1000
             else:
                 estat.alpha = -1000
@@ -60,13 +55,13 @@ class Agent_MinMax(Agent):
 
         elif profunditat == 3:
 
-            if estat.jugador() == TipusCasella.CARA:
-                estat.beta = estat.utilitat
+            if estat.jugador == TipusCasella.CREU:
+                estat.beta = 4 - estat.calc_heuristica() - estat.pes
             else:
-                estat.alpha = estat.utilitat
+                estat.alpha = 4 - estat.calc_heuristica() - estat.pes
             return estat
 
-        fills = estat.genera_fills()
+        fills = estat.genera_fills(percepcio, 2)
         millor_estat = None
 
         for fill in fills:
@@ -75,34 +70,33 @@ class Agent_MinMax(Agent):
             fill.alpha = estat.alpha
             fill.beta = estat.beta
 
-            estat_aux = self.minmax(fill, profunditat+1)
+            estat_aux = self.minmax(fill, profunditat+1, percepcio)
 
             if estat_aux is None:
                 continue
 
-            if estat.jugador == TipusCasella.CREU:
-                if estat.alpha < fill.beta and fill.beta != float('inf'):
+            es_millor = True
+
+            if estat.jugador == TipusCasella.CARA:
+                if estat.alpha < fill.beta and not fill.beta == float('inf'):
                     estat.alpha = fill.beta
                     millor_estat = estat_aux
                 if estat.alpha >= estat.beta:
                     millor_estat = None
                     break
-            #else
+            else:
+                if estat.beta > fill.alpha and not fill.alpha == float('-inf'):
+                    estat.beta = fill.alpha
+                    millor_estat = estat_aux
+                if estat.alpha >= estat.beta:
+                    millor_estat = None
+                    break
+            self.__tancats.add(fill)
 
-
-        #ddd
-        score = self.evaluar(estat)
-        print(estat)
-        print(score)
-        if score is not None:
-            return estat, score
-
-        puntuacio_fills = [self.minmax(estat_fill,percepcio) for estat_fill in estat.genera_fills(percepcio, 2)]
-
-        if estat.jugador() == TipusCasella.CARA:
-            return max(puntuacio_fills)
-        else:
-            return min(puntuacio_fills)
+            if es_millor:
+                return millor_estat
+            else:
+                return None
 
     def evaluar(self, estat):
         if estat.es_meta():
